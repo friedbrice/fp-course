@@ -39,7 +39,7 @@ Problem --
 
 Consideration --
   Try to avoid repetition. Factor out any common expressions.
-  
+
 Example --
 Given file files.txt, containing:
   a.txt
@@ -81,50 +81,32 @@ the contents of c
 
 -- Given the file name, and file contents, print them.
 -- Use @putStrLn@.
-printFile ::
-  FilePath
-  -> Chars
-  -> IO ()
-printFile =
-  error "todo: Course.FileIO#printFile"
+printFile :: FilePath -> Chars -> IO ()
+printFile fp cs = putStrLn ("============ " ++ fp ++ "\n" ++ cs)
 
 -- Given a list of (file name and file contents), print each.
 -- Use @printFile@.
-printFiles ::
-  List (FilePath, Chars)
-  -> IO ()
-printFiles =
-  error "todo: Course.FileIO#printFiles"
+printFiles :: List (FilePath, Chars) -> IO ()
+printFiles files = void (uncurry printFile <$$> files)
 
 -- Given a file name, return (file name and file contents).
 -- Use @readFile@.
-getFile ::
-  FilePath
-  -> IO (FilePath, Chars)
-getFile =
-  error "todo: Course.FileIO#getFile"
+getFile :: FilePath -> IO (FilePath, Chars)
+getFile path = (,) path <$> readFile path
 
 -- Given a list of file names, return list of (file name and file contents).
 -- Use @getFile@.
-getFiles ::
-  List FilePath
-  -> IO (List (FilePath, Chars))
-getFiles =
-  error "todo: Course.FileIO#getFiles"
+getFiles :: List FilePath -> IO (List (FilePath, Chars))
+getFiles paths = getFile <$$> paths
 
 -- Given a file name, read it and for each line in that file, read and print contents of each.
 -- Use @getFiles@ and @printFiles@.
-run ::
-  FilePath
-  -> IO ()
-run =
-  error "todo: Course.FileIO#run"
+run :: FilePath -> IO ()
+run path = printFiles =<< getFiles =<< lines <$> readFile path
 
 -- /Tip:/ use @getArgs@ and @run@
-main ::
-  IO ()
-main =
-  error "todo: Course.FileIO#main"
+main :: IO ()
+main = run . (\(x :. _) -> x) =<< getArgs
 
 ----
 
@@ -132,3 +114,6 @@ main =
 -- ? `sequence . (<$>)`
 -- ? `void . sequence . (<$>)`
 -- Factor it out.
+
+(<$$>) :: Applicative f => (a -> f b) -> List a -> f (List b)
+f <$$> xs = sequence (f <$> xs)
